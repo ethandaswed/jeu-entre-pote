@@ -15,6 +15,39 @@ const COUNTDOWN_MS = 3600;
 const PICK_MS = 15000, DRAW_MS = 80000;
 const CLUE_MS = 45000, VOTE_MS = 30000, WRITE_MS = 60000;
 
+/* ---------- Serveurs réseau (STUN + TURN) ----------
+   Sans serveur TURN, un PC en Wi-Fi et un téléphone en 4G/5G
+   n'arrivent souvent pas à se connecter directement.
+   On utilise le relais gratuit Open Relay (metered.ca) avec des
+   identifiants temporaires calculés ici (méthode « static auth »). */
+const TURN_HOST = "staticauth.openrelay.metered.ca";
+const TURN_SECRET = "openrelayprojectsecret";
+let icePromise = null;
+function getIce() {
+  if (icePromise) return icePromise;
+  const base = [
+    { urls: ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302"] },
+    { urls: "stun:" + TURN_HOST + ":80" },
+    { urls: "turn:eu-0.turn.peerjs.com:3478", username: "peerjs", credential: "peerjsp" }
+  ];
+  icePromise = (async () => {
+    try {
+      const user = (Math.floor(Date.now() / 1000) + 12 * 3600) + ":jeuentrepotes";
+      const enc = new TextEncoder();
+      const key = await crypto.subtle.importKey("raw", enc.encode(TURN_SECRET), { name: "HMAC", hash: "SHA-1" }, false, ["sign"]);
+      const sig = new Uint8Array(await crypto.subtle.sign("HMAC", key, enc.encode(user)));
+      const credential = btoa(String.fromCharCode(...sig));
+      return base.concat([{
+        urls: ["turn:" + TURN_HOST + ":80", "turn:" + TURN_HOST + ":80?transport=tcp",
+               "turn:" + TURN_HOST + ":443", "turns:" + TURN_HOST + ":443?transport=tcp"],
+        username: user, credential
+      }]);
+    } catch (e) { return base; }
+  })();
+  return icePromise;
+}
+const peerOpts = ice => ({ config: { iceServers: ice }, debug: 1 });
+
 /* ---------- Utilitaires ---------- */
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -678,12 +711,13 @@ function hostRemove(id) {
 }
 
 /* créer un lobby : on réserve l'identifiant PeerJS correspondant au code */
-function createLobby(tries = 0) {
+async function createLobby(tries = 0) {
   cleanup(); showWarn("");
   if (typeof Peer === "undefined") return showWarn(tr("netFail"));
   const code = newCode();
   $("createBtn").disabled = true;
-  peer = new Peer(PEER_PREFIX + code);
+  const ice = await getIce();
+  peer = new Peer(PEER_PREFIX + code, peerOpts(ice));
   peer.on("open", () => {
     role = "host"; $("createBtn").disabled = false;
     const last = store.get("bz_lastThemes");
@@ -731,15 +765,19 @@ function createLobby(tries = 0) {
 }
 
 /* rejoindre un lobby : on se connecte à l'hôte */
-function joinLobby(code) {
+async function joinLobby(code) {
   cleanup(); showWarn("");
   if (typeof Peer === "undefined") return showWarn(tr("netFail"));
   $("joinBtn").disabled = true; $("joinBtn").textContent = tr("joining");
-  peer = new Peer();
+  const ice = await getIce();
+  peer = new Peer(peerOpts(ice));
   const done = () => { $("joinBtn").disabled = false; $("joinBtn").textContent = tr("join"); };
   const fail = key => { done(); toast(tr(key)); sfx.bad(); cleanup(); show("home"); showWarn(tr(key)); };
-  const timeout = setTimeout(() => { if (!state) fail("noLobby"); }, 12000);
+  let signaled = false;
+  /* le lobby a été trouvé mais la connexion directe n'aboutit pas → problème de réseau */
+  const timeout = setTimeout(() => { if (!state) fail(signaled ? "natFail" : "noLobby"); }, 25000);
   peer.on("open", () => {
+    signaled = true;
     hostConn = peer.connect(PEER_PREFIX + code, { reliable: true, serialization: "json" });
     hostConn.on("open", () => { role = "guest"; hostConn.send({ type: "join", profile: me }); });
     hostConn.on("data", msg => {
