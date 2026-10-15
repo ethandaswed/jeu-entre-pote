@@ -14,6 +14,7 @@ const REVEAL_MS = 6000;
 const COUNTDOWN_MS = 3600;
 const PICK_MS = 15000, DRAW_MS = 80000;
 const CLUE_MS = 45000, VOTE_MS = 30000, WRITE_MS = 60000;
+const MEMO_MS = 4500, COUNT_MS = 3500;
 
 /* ---------- Serveurs réseau (STUN + TURN) ----------
    Sans serveur TURN, un PC en Wi-Fi et un téléphone en 4G/5G
@@ -332,6 +333,8 @@ function makeStroop() {
   const o = shuffle([ink, w, ...others]);
   return { w, ink, o, a: o.indexOf(ink) };
 }
+/* mots utilisables pour le mot mélangé : un seul mot, ni trop court ni trop long, dans les 3 langues */
+const ANA_IDX = WORDS.map((w, i) => i).filter(i => WORDS[i].every(x => !/[\s\-']/.test(x) && [...x].length >= 4 && [...x].length <= 10));
 const maskOf = s => [...s].map(ch => /[\s\-']/.test(ch) ? ch : "_").join("");
 function nextTurnPlayer() { const pl = [...L.players.values()]; return pl[L.turn++ % pl.length]; }
 
@@ -365,6 +368,27 @@ function makeRound(mode) {
       const pl = [...L.players.values()];
       return { ...R, kind: "spy", src: "spy", spy: pick(pl).id, w: deckIdx("words", WORDS.length), step: "clue", clues: {}, votes: {}, ids: pl.map(p => p.id), names: pl.map(p => p.name) };
     }
+    case "drapeau": {
+      const ai = deckIdx("flags", FLAGS.length), flag = FLAGS[ai];
+      const o = shuffle([flag, ...shuffle(FLAGS.filter(c => c !== flag)).slice(0, 3)]);
+      return { ...R, kind: "choice", src: "flag", flag, o, n: 4, a: o.indexOf(flag) };
+    }
+    case "memoire": {
+      const seq = shuffle(MEMO_EMOJI).slice(0, 7);
+      const extra = pick(MEMO_EMOJI.filter(e => !seq.includes(e)));
+      const o = shuffle([extra, ...shuffle(seq).slice(0, 3)]);
+      return { ...R, kind: "choice", src: "memo", seq, o, n: 4, a: o.indexOf(extra), show: MEMO_MS };
+    }
+    case "compte": {
+      const set = pick(COUNT_SETS), e = pick(set), cnt = rand(4, 11), total = 24;
+      const grid = shuffle([...Array(cnt).fill(e), ...Array.from({ length: total - cnt }, () => pick(set.filter(x => x !== e)))]);
+      return { ...R, kind: "number", src: "count", grid, e, a: cnt, show: COUNT_MS };
+    }
+    case "anagramme": {
+      const sw = ANA_IDX[deckIdx("ana", ANA_IDX.length)];
+      const o = shuffle([sw, ...shuffle(ANA_IDX.filter(i => i !== sw)).slice(0, 3)]);
+      return { ...R, kind: "choice", src: "ana", sw, o, n: 4, a: o.indexOf(sw), seed: rand(1, 1e9) };
+    }
     case "blagues": return { ...R, kind: "joke", src: "joke", pi: deckIdx("prompts", PROMPTS.length), step: "write", answers: {}, order: [], votes: {} };
   }
 }
@@ -389,7 +413,8 @@ function everyoneDone() { const ps = [...L.players.values()]; return ps.length >
 function publicRound(R, viewer) {
   const rev = L.phase === "reveal";
   const q = { kind: R.kind, mode: R.mode, src: R.src, n: R.n };
-  for (const f of ["k", "i", "perm", "t", "o", "w", "ink", "ids", "names", "pid", "pname", "pi"]) if (R[f] !== undefined) q[f] = R[f];
+  for (const f of ["k", "i", "perm", "t", "o", "w", "ink", "ids", "names", "pid", "pname", "pi", "flag", "seq", "grid", "e", "sw", "seed"]) if (R[f] !== undefined) q[f] = R[f];
+  if (R.show && !rev) q.hideIn = Math.max(0, L.roundStart + R.show - Date.now());
   if (R.kind === "choice" || R.kind === "number") { if (rev) q.a = R.a; }
   if (R.src === "color") q.w = R.w;
   if (R.kind === "vote" && rev) { q.counts = R.counts; q.win = R.win; }
@@ -483,8 +508,8 @@ function startRound() {
   else if (R.kind === "spy") setTimer(CLUE_MS);
   else if (R.kind === "joke") setTimer(WRITE_MS);
   else if (R.kind === "reflex") setTimer(R.goDelay + 4000);
-  else if (R.kind === "number") setTimer(L.dur * 1000 + 5000);
-  else setTimer(L.dur * 1000);
+  else if (R.kind === "number") setTimer((R.show || 0) + (R.show ? 15000 : L.dur * 1000 + 5000));
+  else setTimer(L.dur * 1000 + (R.show || 0));
   broadcast();
 }
 function toVoteStep() {
@@ -519,6 +544,7 @@ function hostAnswer(id, c) {
     R.votes[id] = c; return afterAction();
   }
   if (p.answer || R.kind === "aov" || R.kind === "draw") return;
+  if (R.show && Date.now() < L.roundStart + R.show - 400) return;
   if (R.kind === "choice" || R.kind === "vote") { if (!(Number.isInteger(c) && c >= 0 && c < R.n)) return; p.answer = { c, left: Math.max(0, L.phaseEnd - Date.now()) }; }
   else if (R.kind === "number") { if (!isFinite(c)) return; p.answer = { c }; }
   else if (R.kind === "reflex") { if (!isFinite(c)) return; p.answer = { c: c < 0 ? -1 : Math.max(80, Math.min(Math.round(c), 9999)) }; }
@@ -674,7 +700,7 @@ function reveal() {
 /* référence d'une manche pour le récap, sans texte : chacun l'affiche dans sa langue */
 function historyRef(R) {
   const h = { kind: R.kind, mode: R.mode, src: R.src };
-  for (const f of ["k", "i", "perm", "a", "t", "o", "w", "ink", "ids", "names", "pid", "pname", "choice", "ti", "result", "pi", "spy", "caught", "counts", "win"]) if (R[f] !== undefined) h[f] = R[f];
+  for (const f of ["k", "i", "perm", "a", "t", "o", "w", "ink", "ids", "names", "pid", "pname", "choice", "ti", "result", "pi", "spy", "caught", "counts", "win", "flag", "seq", "grid", "e", "sw", "seed"]) if (R[f] !== undefined) h[f] = R[f];
   if (R.kind === "draw") h.w = R.w;
   if (R.kind === "spy") h.w = R.w;
   if (R.kind === "joke") { h.order = R.order; h.texts = R.order.map(id => R.answers[id]); h.got = R.got; }
@@ -862,6 +888,16 @@ function qv(q) {
     case "draw": v.t = q.w != null ? wordL(q.w) : q.masks ? q.masks[LANG_IDX[LANG]] : tr("drawTitle"); v.style = q.w == null && q.masks ? "mask" : ""; break;
     case "spy": v.t = tr("spyTitle"); break;
     case "joke": v.t = promptL(q.pi); v.style = "prompt"; break;
+    case "flag": v.t = tr("flagSub"); v.img = `https://flagcdn.com/w320/${q.flag}.png`; v.o = q.o.map(countryName); break;
+    case "memo":
+      if (previewing()) { v.t = q.seq.join(" "); v.style = "emoji memo"; v.sub = tr("memLook"); }
+      else { v.t = tr("memQ"); v.o = q.o; }
+      break;
+    case "count":
+      if (previewing()) { const g = q.grid; v.t = Array.from({ length: Math.ceil(g.length / 6) }, (_, r) => g.slice(r * 6, r * 6 + 6).join(" ")).join("\n"); v.style = "countgrid"; v.sub = tr("countLook", { e: q.e }); }
+      else v.t = tr("countQ", { e: q.e });
+      break;
+    case "ana": v.t = scramble(WORDS[q.sw][LANG_IDX[LANG]], q.seed); v.style = "ana"; v.sub = tr("anaSub"); v.o = q.o.map(wordL); break;
   }
   return v;
 }
@@ -880,6 +916,8 @@ function applyState(s) {
   if ((s.phase === "question" || s.phase === "reveal") && roundKey !== lastRoundKey) {
     lastRoundKey = roundKey; myChoice = null; numSent = null; reflexState = null; lastSec = null; textSent = null;
     $("numInput").value = ""; $("guessInput").value = "";
+    showUntil = 0; clearTimeout(showT);
+    if (s.question && s.question.hideIn > 0) { showUntil = Date.now() + s.question.hideIn; showT = setTimeout(() => { if (state) renderGame(); }, s.question.hideIn + 40); }
     if (s.question && s.question.kind === "reflex") { reflexGoAt = Date.now() + s.question.goIn; reflexState = "wait"; }
     if (s.question && s.question.kind === "draw" && role === "host") { /* l'hôte garde ses traits */ }
     strokes = []; myStrokeCount = 0; redrawBoard();
@@ -982,11 +1020,11 @@ function renderLobby() {
 
   for (const b of $("modes").children) { b.setAttribute("aria-pressed", b.dataset.m === state.mode); b.disabled = !host; }
   $("modePill").textContent = `${MODES[state.mode].i} ${m.n}`; $("modePill").setAttribute("style", modeVars(state.mode));
-  const few = ["dessin", "imposteur", "blagues", "qps"].includes(state.mode) && state.players.length < 3 ? `<p class="hint">${esc(tr("needPlayers"))}</p>` : "";
+  const few = ["dessin", "blagues", "qps"].includes(state.mode) && state.players.length < 3 ? `<p class="hint">${esc(tr("needPlayers"))}</p>` : "";
   $("modeInfo").innerHTML = `<b>${MODES[state.mode].i} ${esc(m.n)}</b><p>${esc(m.d)} ${esc(m.how)}</p>${few}${host ? "" : `<p>${esc(tr("hostPicks"))}</p>`}`;
 
   for (const id of ["nbQ", "dur"]) for (const b of $(id).children) { b.setAttribute("role", "radio"); b.setAttribute("aria-checked", +b.dataset.v === state[id]); b.disabled = !host; }
-  $("durSeg").hidden = ["aov", "reflexe", "dessin", "imposteur", "blagues"].includes(state.mode);
+  $("durSeg").hidden = ["aov", "reflexe", "dessin", "blagues"].includes(state.mode);
 
   $("catsCard").hidden = !usesCats;
   $("catsTitle").textContent = tr(state.mode === "mix" ? "catsMix" : "cats");
@@ -1025,6 +1063,27 @@ function renderCountdown() {
 }
 
 /* ---------- Manche en cours ---------- */
+let showUntil = 0, showT = null;
+const previewing = () => Date.now() < showUntil;
+/* nom d'un pays dans la langue du joueur (fourni par le navigateur) */
+const regionNames = {};
+function countryName(code) {
+  try { regionNames[LANG] = regionNames[LANG] || new Intl.DisplayNames([LOCALES[LANG]], { type: "region" }); return regionNames[LANG].of(code.toUpperCase()) || code.toUpperCase(); }
+  catch (e) { return code.toUpperCase(); }
+}
+/* mélange des lettres toujours identique pour une même manche (même graine chez tout le monde) */
+function scramble(word, seed) {
+  const letters = [...word.toLocaleUpperCase(LOCALES[LANG])];
+  let x = seed >>> 0;
+  const rnd = () => { x = (x + 0x6D2B79F5) >>> 0; let t = x; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  let out = letters;
+  for (let k = 0; k < 12; k++) {
+    out = letters.slice();
+    for (let i = out.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [out[i], out[j]] = [out[j], out[i]]; }
+    if (out.join("") !== letters.join("")) break;
+  }
+  return out.join(" ");
+}
 let myChoice = null, numSent = null, lastSec = null, reflexGoAt = 0, reflexState = null, textSent = null;
 const SHAPES = ["▲", "◆", "●", "■"];
 const ANS_COLORS = ["var(--a1)", "var(--a2)", "var(--a3)", "var(--a4)"];
@@ -1054,6 +1113,9 @@ function renderGame() {
     if (isNew) { qt.style.animation = "none"; void qt.offsetWidth; qt.style.animation = ""; }
   }
   $("qSub").hidden = !v.sub; $("qSub").textContent = v.sub;
+  const img = $("qImg");
+  img.hidden = !v.img;
+  if (v.img && img.getAttribute("src") !== v.img) img.src = v.img;
 
   const showAnswers = q.kind === "choice" || q.kind === "vote";
   $("answers").hidden = !showAnswers;
@@ -1078,7 +1140,7 @@ function renderGame() {
 function renderAnswers(q, v, reveal) {
   const isPlayers = q.src === "qps";
   const box = $("answers");
-  box.className = "answers" + (v.two ? " two" : "") + (isPlayers ? " players" : "");
+  box.className = "answers" + (v.two ? " two" : "") + (isPlayers ? " players" : "") + (q.src === "memo" ? " emoji-opts" : "");
   const sig = [state.gameNo, state.qIndex, state.phase, myChoice, LANG, v.o.length].join(":");
   if (box.dataset.sig === sig) return;
   box.dataset.sig = sig;
@@ -1103,7 +1165,7 @@ $("answers").onclick = e => {
 };
 
 function renderNumber(q, v, reveal) {
-  const show = q.kind === "number" && !reveal;
+  const show = q.kind === "number" && !reveal && !previewing();
   $("numBox").hidden = !show;
   if (!show) return;
   $("numUnit").textContent = v.unit || "";
@@ -1512,6 +1574,10 @@ function recapText(h) {
     case "draw": t = tr("drawRecap", { name: h.pname }); ans = h.w != null ? wordL(h.w) : ""; break;
     case "spy": t = tr("spyRecap", { w: wordL(h.w) }); ans = tr("spyWas", { name: nameOf(h.spy, h.names[h.ids.indexOf(h.spy)]) }) + (h.caught ? " · " + tr("caughtShort") : " · " + tr("escapedShort")); break;
     case "joke": t = promptL(h.pi); ans = ""; break;
+    case "flag": t = tr("flagSub"); ans = v.o[h.a]; break;
+    case "memo": t = `${tr("memQ")} (${(h.seq || []).join(" ")})`; ans = v.o[h.a]; break;
+    case "count": t = tr("countRecap", { e: h.e }); ans = fmtNum(h.a); break;
+    case "ana": ans = v.o[h.a]; break;
   }
   return { t, ans, v };
 }

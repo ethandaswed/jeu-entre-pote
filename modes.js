@@ -8,7 +8,6 @@ const MODES = {
   quiz:    { n: "Quiz",              i: "🧠", c: ["#8b5cf6", "#ff3d8b"], d: "Plus de 1000 questions dans 61 catégories au choix.", how: "4 réponses, plus tu réponds vite, plus tu gagnes de points." },
   mix:     { n: "Soirée mix",        i: "🎉", c: ["#ff3d8b", "#ffbe0b"], d: "Un mini-jeu différent à chaque manche.", how: "Quiz, vrai ou faux, emojis, réflexes, votes… tout s'enchaîne au hasard." },
   dessin:  { n: "Dessine et devine", i: "🖌️", c: ["#f97316", "#ec4899"], d: "Un joueur dessine, les autres devinent.", how: "Le dessinateur choisit un mot parmi 3. Trouve-le le plus vite possible en tapant tes propositions." },
-  imposteur: { n: "L'Imposteur",     i: "🕵️", c: ["#64748b", "#dc2626"], d: "Tout le monde a le même mot… sauf un.", how: "Chacun donne un indice d'un mot, puis vote pour démasquer l'imposteur. L'imposteur gagne s'il s'en sort." },
   blagues: { n: "Réponse la plus drôle", i: "😂", c: ["#facc15", "#a855f7"], d: "Une question décalée, tout le monde répond.", how: "Écris la réponse la plus drôle, puis vote pour ta préférée. Chaque vote reçu rapporte des points." },
   vf:      { n: "Vrai ou Faux",      i: "✅", c: ["#06d6a0", "#ff4d6d"], d: "Une affirmation, deux boutons.", how: "Vrai ou faux ? Réponds vite pour marquer un max de points." },
   emoji:   { n: "Devine l'emoji",    i: "😜", c: ["#ffbe0b", "#fb5607"], d: "Films, séries et jeux cachés derrière des emojis.", how: "Trouve l'œuvre qui se cache derrière les emojis." },
@@ -19,11 +18,15 @@ const MODES = {
   estim:   { n: "Estimation",        i: "🎯", c: ["#f59e0b", "#16a34a"], d: "Devine le bon chiffre, le plus proche gagne.", how: "Tape un nombre. Le plus proche de la vraie réponse remporte le plus de points." },
   reflexe: { n: "Réflexes",          i: "⚡", c: ["#22e58f", "#0ea5e9"], d: "Tape dès que l'écran devient vert !", how: "Le plus rapide gagne. Trop tôt = manche perdue." },
   calcul:  { n: "Calcul mental",     i: "🧮", c: ["#38bdf8", "#6366f1"], d: "Des calculs à la chaîne, sans calculatrice.", how: "4 réponses, une seule est juste. La vitesse compte." },
+  drapeau: { n: "Drapeaux",          i: "🏳️", c: ["#0ea5e9", "#ef4444"], d: "Un drapeau s'affiche, trouve le pays.", how: "4 pays au choix, réponds vite pour marquer un max de points." },
+  memoire: { n: "Mémoire express",   i: "🧩", c: ["#a855f7", "#22d3ee"], d: "Retiens les emojis avant qu'ils disparaissent.", how: "Des emojis s'affichent quelques secondes. Ensuite, trouve celui qui n'était PAS là." },
+  compte:  { n: "Compte vite",       i: "🔢", c: ["#f43f5e", "#f59e0b"], d: "Combien en as-tu vu ? Tu n'as que 3 secondes.", how: "Une grille d'emojis apparaît puis disparaît. Tape combien il y en avait du type demandé." },
+  anagramme: { n: "Mot mélangé",     i: "🔤", c: ["#10b981", "#6366f1"], d: "Les lettres sont mélangées, retrouve le mot.", how: "Choisis le bon mot parmi 4. Le plus rapide gagne le plus de points." },
   couleur: { n: "Couleur piège",     i: "🎨", c: ["#ff4d6d", "#22d3ee"], d: "Le mot dit une couleur, l'encre en montre une autre.", how: "Clique sur la couleur de l'ENCRE, pas sur le mot écrit !" }
 };
-const MODE_ORDER = ["quiz", "mix", "dessin", "imposteur", "blagues", "vf", "emoji", "aov", "tp", "qps", "jnj", "estim", "reflexe", "calcul", "couleur"];
+const MODE_ORDER = ["quiz", "mix", "dessin", "blagues", "drapeau", "memoire", "compte", "anagramme", "vf", "emoji", "aov", "tp", "qps", "jnj", "estim", "reflexe", "calcul", "couleur"];
 /* modes qui peuvent tomber pendant une Soirée mix */
-const MIX_POOL = ["quiz", "vf", "emoji", "tp", "qps", "jnj", "estim", "reflexe", "calcul", "couleur"];
+const MIX_POOL = ["quiz", "vf", "emoji", "drapeau", "memoire", "compte", "anagramme", "tp", "qps", "jnj", "estim", "reflexe", "calcul", "couleur"];
 
 /* ---------- Vrai ou Faux : [affirmation, vrai ?, explication] ---------- */
 const VRAI_FAUX = [
@@ -395,3 +398,22 @@ const COULEURS = [
   { n: "ROUGE", c: "#ff4d6d" }, { n: "BLEU", c: "#3a86ff" }, { n: "VERT", c: "#22e58f" },
   { n: "JAUNE", c: "#ffd23f" }, { n: "VIOLET", c: "#b26bff" }, { n: "ORANGE", c: "#ff8a3d" }
 ];
+
+/* ---------- Drapeaux : codes pays (les noms s'affichent tout seuls dans chaque langue) ---------- */
+const FLAGS = ["fr", "de", "it", "es", "pt", "gb", "ie", "be", "nl", "ch", "at", "se", "no", "fi", "dk", "is", "pl", "cz", "gr",
+  "tr", "ru", "ua", "ro", "hr", "rs", "hu", "us", "ca", "mx", "br", "ar", "cl", "co", "pe", "uy", "jm", "cu", "jp", "cn", "kr",
+  "in", "pk", "th", "vn", "id", "ph", "my", "sg", "au", "nz", "il", "sa", "ae", "qa", "eg", "ma", "dz", "tn", "sn", "ci", "cm",
+  "ng", "gh", "ke", "za", "et", "lb", "jo", "ir", "iq", "np", "lk", "mn", "kz", "ee", "lv", "lt", "sk", "si", "al", "cy", "mt",
+  "lu", "mc", "ge", "am", "bo", "ec", "ve", "pa", "cr", "ht", "ml", "cd", "tz", "mg"];
+
+/* ---------- Mémoire express : emojis à retenir ---------- */
+const MEMO_EMOJI = ["🍕", "🚀", "🐶", "🎸", "⚽", "🍩", "🦄", "🌵", "🎮", "🐙", "🍉", "🚗", "👑", "🎈", "🐸", "🍔", "🌈", "🔥",
+  "🐼", "🍦", "🎁", "📱", "🦊", "🍓", "🏀", "🐢", "🎧", "🍟", "⏰", "🦋", "🐝", "🍌", "🎲", "🚲", "🐧", "🌙", "⭐", "🍪", "🦁",
+  "🎃", "🐳", "🥑", "🏆", "🍿", "🐵", "🌻", "🛸", "🧁", "🦖", "💎", "🎯", "🐷", "🍒", "🚁", "🐰", "🥥", "🎤", "🧲", "🐞", "🍭"];
+
+/* ---------- Compte vite : familles d'emojis qui se ressemblent un peu ---------- */
+const COUNT_SETS = [
+  ["🍎", "🍅", "🍒", "🍓"], ["🐶", "🐱", "🐹", "🐰"], ["⚽", "🏀", "🏐", "🎾"], ["🚗", "🚕", "🚙", "🚓"],
+  ["😀", "😃", "😄", "😁"], ["🌕", "🌝", "🌞", "⭐"], ["🍩", "🍪", "🥯", "🧇"], ["🐸", "🐢", "🦎", "🐊"],
+  ["💙", "💜", "💚", "🖤"], ["🔴", "🟠", "🟡", "🟤"], ["🐟", "🐠", "🐡", "🦈"], ["🌲", "🌳", "🌴", "🌵"]];
+

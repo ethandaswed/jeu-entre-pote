@@ -528,3 +528,11 @@ input::placeholder { color: var(--muted); font-weight: 700; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition: none !important; }
 }
+
+/* ---------- Nouveaux mini-jeux ---------- */
+.q-img { display: block; margin: 4px auto 10px; width: min(240px, 66%); aspect-ratio: 3 / 2; object-fit: cover; border-radius: 14px;
+  box-shadow: 0 10px 30px #0008, 0 0 0 3px #ffffff22; background: #ffffff10; animation: popIn .35s ease; }
+.question.memo { font-size: clamp(38px, 11vw, 64px); letter-spacing: .12em; line-height: 1.35; }
+.question.countgrid { font-family: var(--f-body); font-size: clamp(28px, 8vw, 44px); line-height: 1.3; letter-spacing: .1em; white-space: pre-line; }
+.question.ana { font-family: var(--f-logo); font-size: clamp(30px, 9vw, 58px); letter-spacing: .06em; word-spacing: .1em; }
+.answers.emoji-opts .answer > span:not(.sh) { font-size: 38px; line-height: 1; }

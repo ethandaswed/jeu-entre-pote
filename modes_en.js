@@ -8,7 +8,6 @@ const PACK_EN = {
     quiz: { n: "Quiz", d: "Over 1,000 questions in 61 categories.", how: "4 answers, the faster you answer, the more points you get." },
     mix: { n: "Party mix", d: "A different mini-game every round.", how: "Quiz, true or false, emojis, reflexes, votes… all mixed at random." },
     dessin: { n: "Draw & Guess", d: "One player draws, the others guess.", how: "The drawer picks one of 3 words. Guess it as fast as you can by typing your guesses." },
-    imposteur: { n: "Impostor", d: "Everyone gets the same word… except one.", how: "Everyone gives a one-word clue, then votes to unmask the impostor. The impostor wins if they get away." },
     blagues: { n: "Funniest Answer", d: "A silly question, everyone answers.", how: "Write the funniest answer, then vote for your favorite. Every vote you get earns points." },
     vf: { n: "True or False", d: "One statement, two buttons.", how: "True or false? Answer fast to score big." },
     emoji: { n: "Guess the Emoji", d: "Movies, shows and games hidden in emojis.", how: "Find the title hiding behind the emojis." },
@@ -19,6 +18,10 @@ const PACK_EN = {
     estim: { n: "Estimation", d: "Guess the number, the closest wins.", how: "Type a number. The closest to the real answer scores the most." },
     reflexe: { n: "Reflexes", d: "Tap as soon as the screen turns green!", how: "Fastest wins. Too early = round lost." },
     calcul: { n: "Mental Math", d: "Quick sums, no calculator.", how: "4 answers, only one is right. Speed counts." },
+    drapeau: { n: "Flags", d: "A flag appears, find the country.", how: "4 countries to choose from, answer fast to score big." },
+    memoire: { n: "Memory Flash", d: "Remember the emojis before they vanish.", how: "Emojis appear for a few seconds. Then find the one that was NOT there." },
+    compte: { n: "Quick Count", d: "How many did you see? You only get 3 seconds.", how: "A grid of emojis appears then disappears. Type how many of the requested one there were." },
+    anagramme: { n: "Word Scramble", d: "The letters are mixed up, find the word.", how: "Pick the right word out of 4. The fastest player scores the most." },
     couleur: { n: "Color Trap", d: "The word says one color, the ink shows another.", how: "Click the color of the INK, not the written word!" }
   },
   fams: { games: "Video games", anime: "Anime & manga", movies: "Movies & shows", music: "Music", sport: "Sports", stars: "Celebrities", culture: "General knowledge" },
