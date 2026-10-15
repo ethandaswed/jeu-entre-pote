@@ -737,7 +737,7 @@ function joinLobby(code) {
   $("joinBtn").disabled = true; $("joinBtn").textContent = tr("joining");
   peer = new Peer();
   const done = () => { $("joinBtn").disabled = false; $("joinBtn").textContent = tr("join"); };
-  const fail = key => { done(); toast(tr(key)); sfx.bad(); cleanup(); show("home"); };
+  const fail = key => { done(); toast(tr(key)); sfx.bad(); cleanup(); show("home"); showWarn(tr(key)); };
   const timeout = setTimeout(() => { if (!state) fail("noLobby"); }, 12000);
   peer.on("open", () => {
     hostConn = peer.connect(PEER_PREFIX + code, { reliable: true, serialization: "json" });
@@ -788,7 +788,11 @@ $("leaveBtn").onclick = leave;
 $("homeBtn").onclick = leave;
 $("logo").onclick = () => { if (!state) show("home"); };
 $("copyCode").onclick = () => copy(state.code, tr("copied"));
-$("copyLink").onclick = () => copy(`${location.origin}${location.pathname}?code=${state.code}`, tr("linkCopied"));
+/* en local (Live Server), le lien pointe vers le vrai site en ligne pour que les potes puissent l'ouvrir */
+const SITE_URL = "https://ethandaswed.github.io/jeu-entre-pote/";
+const isLocal = () => location.protocol === "file:" || /^(localhost|127\.|192\.168\.|10\.|0\.0\.0\.0|\[::1\])/.test(location.hostname);
+const inviteURL = () => (isLocal() ? SITE_URL : location.origin + location.pathname) + "?code=" + state.code;
+$("copyLink").onclick = () => copy(inviteURL(), tr("linkCopied"));
 
 function show(screen) { for (const s of ["home", "lobby", "game", "end"]) $(s).hidden = s !== screen; }
 const isHost = () => role === "host";
