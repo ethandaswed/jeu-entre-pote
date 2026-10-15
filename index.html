@@ -10,11 +10,10 @@
   <title>Jeu Entre Potes</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&family=Lilita+One&family=Nunito:wght@500;700;800;900&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&family=Lilita+One&family=Nunito:wght@500;700;800;900&family=Rubik:wght@500;700;800;900&family=Secular+One&display=swap">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- fond animé + confettis -->
   <div class="bg" aria-hidden="true"><span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span></div>
   <canvas id="fx" aria-hidden="true"></canvas>
 
@@ -22,10 +21,13 @@
     <header class="top">
       <button class="logo" id="logo" aria-label="Accueil">
         <span class="buzzer" aria-hidden="true"></span>
-        <span class="logo-txt">JEU <em>ENTRE</em> POTES</span>
+        <span class="logo-txt" data-i18n-html="logo">JEU <em>ENTRE</em> POTES</span>
       </button>
       <div class="top-right">
-        <button class="icon-btn" id="soundBtn" aria-label="Couper le son" title="Son">🔊</button>
+        <div class="lang" id="langSwitch" role="group" aria-label="Langue">
+          <button data-lang="fr" title="Français">FR</button><button data-lang="en" title="English">EN</button><button data-lang="he" title="עברית">עב</button>
+        </div>
+        <button class="icon-btn" id="soundBtn" aria-label="Son">🔊</button>
         <div class="me-chip" id="meChip"></div>
       </div>
     </header>
@@ -35,47 +37,47 @@
     <!-- ================= ACCUEIL ================= -->
     <main id="home" class="screen">
       <section class="hero">
-        <p class="kicker">Le quiz multijoueur entre potes</p>
-        <h1 class="hero-title">Qui est le <span class="hl">boss</span> de la bande&nbsp;?</h1>
+        <p class="kicker" data-i18n="kicker"></p>
+        <h1 class="hero-title" data-i18n-html="heroTitle"></h1>
         <div class="stats">
-          <div><b id="statCats">61</b><span>catégories</span></div>
-          <div><b id="statQs">500+</b><span>questions</span></div>
-          <div><b id="statModes">12</b><span>mini-jeux</span></div>
-          <div><b>20</b><span>joueurs max</span></div>
+          <div><b id="statCats">61</b><span data-i18n="statCats"></span></div>
+          <div><b id="statQs">1000+</b><span data-i18n="statQs"></span></div>
+          <div><b id="statModes">15</b><span data-i18n="statModes"></span></div>
+          <div><b>20</b><span data-i18n="statPlayers"></span></div>
         </div>
         <div class="ticker" aria-hidden="true"><div class="ticker-track" id="ticker"></div></div>
       </section>
 
       <div class="home-grid">
         <section class="card profile-card">
-          <h2 class="card-title"><span>1</span> Ton profil</h2>
+          <h2 class="card-title"><span>1</span> <span data-i18n="profileTitle"></span></h2>
           <div class="profile">
-            <label class="pick" title="Changer la photo">
+            <label class="pick">
               <span id="bigAvatar"></span>
               <span class="pick-badge">📷</span>
-              <input type="file" id="photo" accept="image/*" aria-label="Choisir une photo de profil">
+              <input type="file" id="photo" accept="image/*" aria-label="Photo">
             </label>
             <div class="field">
-              <label for="pseudo">Pseudo</label>
-              <input type="text" id="pseudo" maxlength="18" placeholder="Ex : MoonwalkKing" autocomplete="nickname">
+              <label for="pseudo" data-i18n="pseudo"></label>
+              <input type="text" id="pseudo" maxlength="18" data-i18n-ph="pseudoPh" autocomplete="nickname">
             </div>
           </div>
         </section>
 
         <section class="card play-card">
-          <h2 class="card-title"><span>2</span> Jouer</h2>
-          <button class="btn-mega" id="createBtn"><span>Créer un lobby</span><small>Quiz, Action ou Vérité, Réflexes et 9 autres jeux</small></button>
-          <div class="or"><span>ou rejoins tes potes</span></div>
+          <h2 class="card-title"><span>2</span> <span data-i18n="playTitle"></span></h2>
+          <button class="btn-mega" id="createBtn"><span data-i18n="create"></span><small data-i18n="createSub"></small></button>
+          <div class="or"><span data-i18n="orJoin"></span></div>
           <div class="join-row">
-            <input type="text" id="joinCode" maxlength="5" placeholder="CODE" aria-label="Code du lobby" autocomplete="off" autocapitalize="characters" spellcheck="false">
-            <button class="btn" id="joinBtn">Rejoindre</button>
+            <input type="text" id="joinCode" maxlength="5" placeholder="CODE" aria-label="Code" autocomplete="off" autocapitalize="characters" spellcheck="false" dir="ltr">
+            <button class="btn" id="joinBtn" data-i18n="join"></button>
           </div>
         </section>
 
         <section class="card board-card">
-          <h2 class="card-title"><span>🏆</span> Classement général</h2>
+          <h2 class="card-title"><span>🏆</span> <span data-i18n="boardTitle"></span></h2>
           <ol class="board" id="globalBoard"></ol>
-          <p class="empty" id="globalEmpty">Aucune partie terminée pour l'instant. Lance un quiz et prends la première place&nbsp;!</p>
+          <p class="empty" id="globalEmpty" data-i18n="boardEmpty"></p>
         </section>
       </div>
     </main>
@@ -84,19 +86,19 @@
     <main id="lobby" class="screen" hidden>
       <section class="card code-card">
         <div class="code-left">
-          <span class="label">Code du lobby</span>
-          <span class="code" id="lobbyCode">-----</span>
+          <span class="label" data-i18n="lobbyCode"></span>
+          <span class="code" id="lobbyCode" dir="ltr">-----</span>
         </div>
         <div class="code-actions">
-          <button class="btn small" id="copyCode">Copier le code</button>
-          <button class="btn small ghost" id="copyLink">Copier le lien</button>
+          <button class="btn small" id="copyCode" data-i18n="copyCode"></button>
+          <button class="btn small ghost" id="copyLink" data-i18n="copyLink"></button>
         </div>
         <div id="linkFallback" class="fallback" hidden></div>
       </section>
 
       <section class="card mode-card">
         <div class="card-head">
-          <h2 class="card-title"><span>🎮</span> Mode de jeu</h2>
+          <h2 class="card-title"><span>🎮</span> <span data-i18n="modeTitle"></span></h2>
           <span class="mode-pill" id="modePill"></span>
         </div>
         <div class="modes" id="modes"></div>
@@ -106,67 +108,63 @@
       <div class="lobby-grid">
         <section class="card players-card">
           <div class="card-head">
-            <h2 class="card-title"><span>👥</span> Joueurs</h2>
+            <h2 class="card-title"><span>👥</span> <span data-i18n="players"></span></h2>
             <span class="count-pill" id="nbPlayers">0</span>
           </div>
           <div class="players" id="players"></div>
           <div class="settings" id="settings">
             <div class="seg">
-              <span class="label" id="nbQLabel">Manches</span>
-              <div class="seg-btns" id="nbQ" role="radiogroup" aria-label="Nombre de questions">
+              <span class="label" data-i18n="rounds"></span>
+              <div class="seg-btns" id="nbQ" role="radiogroup">
                 <button data-v="5">5</button><button data-v="10">10</button><button data-v="15">15</button><button data-v="20">20</button>
               </div>
             </div>
             <div class="seg" id="durSeg">
-              <span class="label">Secondes par manche</span>
-              <div class="seg-btns" id="dur" role="radiogroup" aria-label="Temps par question">
+              <span class="label" data-i18n="secs"></span>
+              <div class="seg-btns" id="dur" role="radiogroup">
                 <button data-v="10">10</button><button data-v="15">15</button><button data-v="20">20</button><button data-v="30">30</button>
               </div>
             </div>
           </div>
-          <button class="ghost-link" id="leaveBtn">Quitter le lobby</button>
+          <button class="ghost-link" id="leaveBtn" data-i18n="leave"></button>
         </section>
 
         <section class="card cats-card" id="catsCard">
           <div class="card-head">
-            <h2 class="card-title"><span>🎯</span> <span class="ct" id="catsTitle">Catégories</span></h2>
+            <h2 class="card-title"><span>🎯</span> <span class="ct" id="catsTitle"></span></h2>
             <span class="count-pill" id="selCount">0</span>
           </div>
-
-          <!-- vue de l'hôte -->
           <div id="hostPicker">
             <div class="picker-tools">
-              <input type="search" id="catSearch" placeholder="Rechercher : Valorant, Naruto, NBA…" aria-label="Rechercher une catégorie">
+              <input type="search" id="catSearch" data-i18n-ph="catSearchPh">
               <div class="quick">
-                <button class="chip-btn" id="pickMix">🎲 Méga mix</button>
-                <button class="chip-btn" id="pickRandom">🔀 Au hasard</button>
-                <button class="chip-btn" id="pickNone">✖ Vider</button>
+                <button class="chip-btn" id="pickMix" data-i18n="megaMix"></button>
+                <button class="chip-btn" id="pickRandom" data-i18n="random"></button>
+                <button class="chip-btn" id="pickNone" data-i18n="clear"></button>
               </div>
             </div>
             <div class="fam-tabs" id="famTabs" role="tablist"></div>
             <div class="cats" id="cats"></div>
           </div>
-
-          <!-- vue des invités -->
           <div id="guestPicker" hidden>
-            <p class="empty" id="guestHint">L'hôte choisit les catégories…</p>
+            <p class="empty" id="guestHint"></p>
             <div class="sel-chips" id="selChips"></div>
           </div>
         </section>
       </div>
 
       <div class="start-bar">
-        <button class="btn-mega start" id="startBtn"><span>Lancer la partie</span><small id="startHint"></small></button>
-        <p class="waiting" id="waitHost" hidden><span class="dots"><i></i><i></i><i></i></span> En attente que l'hôte lance la partie</p>
+        <button class="btn-mega start" id="startBtn"><span data-i18n="start"></span><small id="startHint"></small></button>
+        <p class="waiting" id="waitHost" hidden><span class="dots"><i></i><i></i><i></i></span> <span data-i18n="waitHost"></span></p>
       </div>
     </main>
 
-    <!-- ================= QUESTION ================= -->
+    <!-- ================= MANCHE ================= -->
     <main id="game" class="screen" hidden>
       <div class="q-top">
-        <span class="q-num" id="qNum">1/10</span>
+        <span class="q-num" id="qNum" dir="ltr">1/10</span>
         <span class="q-cat" id="qCat"></span>
-        <div class="ring" aria-live="off">
+        <div class="ring">
           <svg viewBox="0 0 44 44" aria-hidden="true"><circle class="ring-bg" cx="22" cy="22" r="19"></circle><circle class="ring-fg" id="ringFg" cx="22" cy="22" r="19"></circle></svg>
           <span id="secs">15</span>
         </div>
@@ -178,14 +176,42 @@
       <div class="answers" id="answers"></div>
 
       <form class="num-box" id="numBox" hidden>
-        <input type="number" id="numInput" inputmode="decimal" step="any" placeholder="Ta réponse" aria-label="Ta réponse">
+        <input type="number" id="numInput" inputmode="decimal" step="any" data-i18n-ph="numPh" dir="ltr">
         <span class="num-unit" id="numUnit"></span>
-        <button class="btn" id="numSend" type="submit">Valider</button>
+        <button class="btn" id="numSend" type="submit"></button>
       </form>
 
-      <button class="reflex-pad" id="reflexPad" hidden><b id="reflexTxt">Attends le vert…</b><small id="reflexSub">Ne touche pas trop tôt !</small></button>
+      <button class="reflex-pad" id="reflexPad" hidden><b id="reflexTxt"></b><small id="reflexSub"></small></button>
 
       <div class="aov" id="aovBox" hidden></div>
+
+      <!-- Dessine et devine -->
+      <div class="draw" id="drawBox" hidden>
+        <div class="draw-info" id="drawInfo"></div>
+        <div class="draw-pick" id="drawPick" hidden></div>
+        <div class="draw-stage" id="drawStage">
+          <div class="draw-left">
+            <div class="canvas-wrap" id="canvasWrap"><canvas id="board"></canvas></div>
+            <div class="draw-tools" id="drawTools" hidden>
+              <div class="swatches" id="swatches"></div>
+              <div class="sizes" id="sizes"></div>
+              <button class="tool" id="eraserBtn" type="button">🧽</button>
+              <button class="tool" id="undoBtn" type="button">↩️</button>
+              <button class="tool" id="clearBtn" type="button">🗑️</button>
+            </div>
+          </div>
+          <div class="chat-col">
+            <ol class="chat" id="chat"></ol>
+            <form class="guess" id="guessForm">
+              <input type="text" id="guessInput" maxlength="40" autocomplete="off" data-i18n-ph="guessPh">
+              <button class="btn small" type="submit">➤</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Imposteur & Réponse la plus drôle -->
+      <div class="text-game" id="textBox" hidden></div>
 
       <div class="answered-row" id="answeredRow"></div>
       <p class="g-status" id="gStatus"></p>
@@ -194,41 +220,67 @@
         <div class="verdict" id="verdict"></div>
         <div class="vote-res" id="voteRes"></div>
         <ol class="board compact" id="roundBoard"></ol>
-        <button class="btn" id="nextBtn" hidden>Question suivante</button>
+        <button class="btn" id="nextBtn" hidden></button>
         <p class="auto-next" id="autoNext"></p>
       </section>
     </main>
 
     <!-- ================= FIN ================= -->
     <main id="end" class="screen" hidden>
-      <h2 class="end-title">Fin de la partie&nbsp;!</h2>
+      <h2 class="end-title" data-i18n="endTitle"></h2>
       <p class="end-sub" id="endSub"></p>
       <div class="podium" id="podium"></div>
       <ol class="board" id="finalBoard"></ol>
       <section class="card recap-card">
         <div class="card-head">
-          <h2 class="card-title"><span>📋</span> Récap des manches</h2>
+          <h2 class="card-title"><span>📋</span> <span data-i18n="recapTitle"></span></h2>
           <span class="count-pill" id="recapScore"></span>
         </div>
         <ol class="recap" id="recap"></ol>
       </section>
       <div class="end-actions">
-        <button class="btn-mega" id="againBtn"><span>Rejouer</span><small>Mêmes joueurs, nouvelles questions</small></button>
-        <button class="btn ghost" id="toLobbyBtn">Changer les catégories</button>
-        <button class="ghost-link" id="homeBtn">Quitter</button>
+        <button class="btn-mega" id="againBtn"><span data-i18n="again"></span><small data-i18n="againSub"></small></button>
+        <button class="btn ghost" id="toLobbyBtn" data-i18n="toLobby"></button>
+        <button class="ghost-link" id="homeBtn" data-i18n="quit"></button>
       </div>
-      <p class="waiting" id="againWait" hidden>L'hôte peut relancer une partie.</p>
+      <p class="waiting" id="againWait" hidden data-i18n="againWait"></p>
     </main>
   </div>
 
-  <!-- compte à rebours -->
   <div class="countdown" id="countdown" hidden><span id="cdNum">3</span><p id="cdCats"></p></div>
   <div class="toast" id="toast" role="status" hidden></div>
 
-  <!-- PeerJS : connexion directe entre les navigateurs des joueurs -->
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <script src="questions.js"></script>
+  <script src="questions_en.js"></script>
+  <script src="questions_he.js"></script>
   <script src="modes.js"></script>
+  <script src="modes_en.js"></script>
+  <script src="modes_he.js"></script>
+  <script src="words.js"></script>
+  <script src="i18n.js"></script>
   <script src="script.js"></script>
+  <script>
+    /* Vérification : affiche un message clair si un fichier manque ou n'est pas à jour */
+    (function () {
+      var has = function (n) { try { return eval("typeof " + n) !== "undefined"; } catch (e) { return false; } };
+      var bad = [];
+      if (!has("Peer")) bad.push("PeerJS (pas de connexion internet ?)");
+      if (!has("THEMES")) bad.push("questions.js");
+      if (!has("THEMES_EN")) bad.push("questions_en.js");
+      if (!has("THEMES_HE")) bad.push("questions_he.js");
+      if (!has("MODES") || !MODES.dessin) bad.push("modes.js (ancienne version ?)");
+      if (!has("PACK_EN")) bad.push("modes_en.js");
+      if (!has("PACK_HE")) bad.push("modes_he.js");
+      if (!has("WORDS")) bad.push("words.js");
+      if (!has("I18N")) bad.push("i18n.js");
+      if (!has("tr") || !has("LANGS")) bad.push("script.js (ancienne version ?)");
+      if (!bad.length) return;
+      var d = document.createElement("div");
+      d.style.cssText = "position:fixed;left:12px;right:12px;bottom:12px;z-index:9999;background:#ff3b5c;color:#fff;padding:14px 16px;border-radius:14px;font:600 15px/1.4 system-ui,sans-serif;box-shadow:0 10px 30px #0008";
+      d.innerHTML = "⚠️ Fichier manquant ou pas à jour : <b>" + bad.join(", ") + "</b><br>Mets les 11 fichiers dans le même dossier, avec exactement ces noms (sans « (1) »), puis recharge avec Ctrl+F5.";
+      document.body.appendChild(d);
+    })();
+  </script>
 </body>
 </html>

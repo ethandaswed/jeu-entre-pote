@@ -7,6 +7,9 @@
 const MODES = {
   quiz:    { n: "Quiz",              i: "🧠", c: ["#8b5cf6", "#ff3d8b"], d: "Plus de 1000 questions dans 61 catégories au choix.", how: "4 réponses, plus tu réponds vite, plus tu gagnes de points." },
   mix:     { n: "Soirée mix",        i: "🎉", c: ["#ff3d8b", "#ffbe0b"], d: "Un mini-jeu différent à chaque manche.", how: "Quiz, vrai ou faux, emojis, réflexes, votes… tout s'enchaîne au hasard." },
+  dessin:  { n: "Dessine et devine", i: "🖌️", c: ["#f97316", "#ec4899"], d: "Un joueur dessine, les autres devinent.", how: "Le dessinateur choisit un mot parmi 3. Trouve-le le plus vite possible en tapant tes propositions." },
+  imposteur: { n: "L'Imposteur",     i: "🕵️", c: ["#64748b", "#dc2626"], d: "Tout le monde a le même mot… sauf un.", how: "Chacun donne un indice d'un mot, puis vote pour démasquer l'imposteur. L'imposteur gagne s'il s'en sort." },
+  blagues: { n: "Réponse la plus drôle", i: "😂", c: ["#facc15", "#a855f7"], d: "Une question décalée, tout le monde répond.", how: "Écris la réponse la plus drôle, puis vote pour ta préférée. Chaque vote reçu rapporte des points." },
   vf:      { n: "Vrai ou Faux",      i: "✅", c: ["#06d6a0", "#ff4d6d"], d: "Une affirmation, deux boutons.", how: "Vrai ou faux ? Réponds vite pour marquer un max de points." },
   emoji:   { n: "Devine l'emoji",    i: "😜", c: ["#ffbe0b", "#fb5607"], d: "Films, séries et jeux cachés derrière des emojis.", how: "Trouve l'œuvre qui se cache derrière les emojis." },
   aov:     { n: "Action ou Vérité",  i: "🔥", c: ["#ff4d6d", "#8b5cf6"], d: "Chacun son tour, action ou vérité ?", how: "Le joueur désigné choisit, tout le monde voit le défi. Défi relevé = +500 points." },
@@ -18,7 +21,7 @@ const MODES = {
   calcul:  { n: "Calcul mental",     i: "🧮", c: ["#38bdf8", "#6366f1"], d: "Des calculs à la chaîne, sans calculatrice.", how: "4 réponses, une seule est juste. La vitesse compte." },
   couleur: { n: "Couleur piège",     i: "🎨", c: ["#ff4d6d", "#22d3ee"], d: "Le mot dit une couleur, l'encre en montre une autre.", how: "Clique sur la couleur de l'ENCRE, pas sur le mot écrit !" }
 };
-const MODE_ORDER = ["quiz", "mix", "vf", "emoji", "aov", "tp", "qps", "jnj", "estim", "reflexe", "calcul", "couleur"];
+const MODE_ORDER = ["quiz", "mix", "dessin", "imposteur", "blagues", "vf", "emoji", "aov", "tp", "qps", "jnj", "estim", "reflexe", "calcul", "couleur"];
 /* modes qui peuvent tomber pendant une Soirée mix */
 const MIX_POOL = ["quiz", "vf", "emoji", "tp", "qps", "jnj", "estim", "reflexe", "calcul", "couleur"];
 

@@ -20,9 +20,9 @@
   /* couleurs des 4 réponses */
   --a1: #ff4d6d; --a2: #3a86ff; --a3: #ffbe0b; --a4: #06d6a0;
 
-  --f-logo: "Bungee", "Impact", system-ui, sans-serif;
-  --f-display: "Lilita One", "Arial Black", system-ui, sans-serif;
-  --f-body: "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --f-logo: "Bungee", "Secular One", "Impact", system-ui, sans-serif;
+  --f-display: "Lilita One", "Secular One", "Arial Black", system-ui, sans-serif;
+  --f-body: "Nunito", "Rubik", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 
   --r: 22px;
   --gutter: max(14px, env(safe-area-inset-left, 0px));
@@ -97,7 +97,7 @@ button:disabled { cursor: not-allowed; }
 .card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .card-title { margin: 0; font-family: var(--f-display); font-weight: 400; font-size: 22px; letter-spacing: .01em;
   display: flex; align-items: center; gap: 10px; }
-.card-title span { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px;
+.card-title > span:first-child { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px;
   background: var(--panel-2); font-size: 16px; font-family: var(--f-logo); }
 .label { font-size: 11px; text-transform: uppercase; letter-spacing: .14em; color: var(--muted); font-weight: 900; }
 .count-pill { font-family: var(--f-logo); font-size: 15px; background: var(--yellow); color: var(--bg);
@@ -421,6 +421,75 @@ input::placeholder { color: var(--muted); font-weight: 700; }
 .recap .chip.ok { box-shadow: inset 0 0 0 1.5px var(--good); }
 .recap .chip.ko { box-shadow: inset 0 0 0 1.5px var(--bad); opacity: .75; }
 
+/* ---------- Langue ---------- */
+.lang { display: flex; background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 3px; gap: 2px; direction: ltr; }
+.lang button { min-width: 34px; height: 34px; border-radius: 999px; font-weight: 900; font-size: 12px; color: var(--muted); }
+.lang button[aria-pressed=true] { background: var(--ink); color: var(--bg); }
+[dir=rtl] .ticker-track { direction: ltr; }
+[dir=rtl] .recap li { border-left: 0; border-right: 4px solid var(--c, var(--violet)); }
+[dir=rtl] .vote-row .bar { inset: 0 0 0 auto; background: linear-gradient(270deg, var(--c, var(--violet)), transparent); }
+[dir=rtl] .pick-badge { right: auto; left: -4px; }
+[dir=rtl] .answer, [dir=rtl] .cat, [dir=rtl] .mode { text-align: right; }
+[dir=rtl] .cat .tick { right: auto; left: 8px; }
+[dir=rtl] .answer.right::after, [dir=rtl] .answer.wrong::after { margin-left: 0; margin-right: auto; }
+[dir=rtl] .question.calc, [dir=rtl] .code, [dir=rtl] .q-num { direction: ltr; }
+.mode-info .hint { color: var(--yellow); }
+
+/* ---------- Dessine et devine ---------- */
+.draw { display: grid; gap: 12px; }
+.draw-info { display: flex; align-items: center; gap: 10px; font-weight: 900; flex-wrap: wrap; justify-content: center; text-align: center; }
+.draw-info .found-count { font-size: 13px; color: var(--muted); font-weight: 800; padding: 3px 10px; border-radius: 999px; background: var(--panel-2); }
+.draw-pick { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.draw-pick .btn { min-height: 64px; font-size: 18px; font-family: var(--f-display); font-weight: 400; background: linear-gradient(135deg, var(--yellow), #ff9e00); }
+.draw-stage { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+.draw-left { display: grid; gap: 10px; min-width: 0; }
+.canvas-wrap { width: 100%; aspect-ratio: 4 / 3; max-width: 100%; border-radius: 18px; overflow: hidden; background: #fff; box-shadow: 0 0 0 3px rgba(255,255,255,.15), 0 20px 40px -20px rgba(0,0,0,.7); }
+#board { width: 100%; height: 100%; display: block; touch-action: none; cursor: crosshair; }
+.draw-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; direction: ltr; }
+.swatches, .sizes { display: flex; gap: 6px; flex-wrap: wrap; }
+.sw { width: 30px; height: 30px; border-radius: 50%; background: var(--sw); box-shadow: inset 0 0 0 2px rgba(0,0,0,.25); }
+.sw[aria-pressed=true] { box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--yellow); }
+.sz, .tool { width: 40px; height: 40px; border-radius: 12px; background: var(--panel-2); display: grid; place-items: center; font-size: 18px; }
+.sz i { width: var(--d); height: var(--d); border-radius: 50%; background: var(--ink); }
+.sz[aria-pressed=true], .tool[aria-pressed=true] { background: var(--yellow); }
+.sz[aria-pressed=true] i { background: var(--bg); }
+.chat-col { display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 8px; min-width: 0; }
+.chat { list-style: none; margin: 0; padding: 10px; display: flex; flex-direction: column; gap: 4px; height: 150px; overflow-y: auto;
+  background: rgba(0,0,0,.25); border-radius: 14px; font-size: 14px; }
+.chat li { overflow-wrap: anywhere; }
+.chat li b { color: var(--cyan); }
+.chat li.ok { color: var(--good); font-weight: 900; }
+.guess { display: flex; gap: 8px; }
+.guess input { flex: 1; }
+.question.mask { font-family: var(--f-logo); letter-spacing: .25em; font-size: clamp(26px, 7vw, 44px); }
+
+/* ---------- Imposteur / Réponse la plus drôle ---------- */
+.text-game { display: grid; gap: 14px; }
+.secret { display: grid; gap: 6px; justify-items: center; text-align: center; padding: 22px 18px; border-radius: 22px;
+  background: linear-gradient(135deg, #22d3ee, #3a86ff); color: #fff; box-shadow: 0 20px 50px -24px #22d3ee; animation: qIn .5s cubic-bezier(.34,1.56,.64,1); }
+.secret.spy { background: linear-gradient(135deg, #ef4444, #7f1d1d); box-shadow: 0 20px 50px -24px #ef4444; }
+.secret .tag { font-weight: 900; text-transform: uppercase; letter-spacing: .14em; font-size: 12px; opacity: .9; }
+.secret b { font-family: var(--f-display); font-weight: 400; font-size: clamp(34px, 9vw, 54px); line-height: 1.05; }
+.secret p { margin: 0; font-weight: 800; font-size: 14px; opacity: .92; text-wrap: balance; }
+.text-form { display: flex; gap: 10px; }
+.text-form input { flex: 1; font-size: 18px; }
+.step-title { margin: 0; text-align: center; font-family: var(--f-display); font-size: 22px; }
+.pick-list { display: grid; gap: 8px; }
+.pick-row { display: flex; align-items: center; gap: 10px; text-align: start; padding: 10px 14px; min-height: 58px; border-radius: 16px;
+  background: var(--panel-2); border: 2px solid var(--line); transition: transform .08s, border-color .15s, opacity .2s; }
+.pick-row:not(:disabled):hover { border-color: var(--cyan); }
+.pick-row:not(:disabled):active { transform: scale(.98); }
+.pick-row.chosen { border-color: var(--yellow); background: rgba(255,210,63,.12); }
+.pick-row:disabled:not(.chosen) { opacity: .55; }
+.pick-row .pr-name { font-weight: 900; flex: none; }
+.pick-row .pr-text { font-weight: 800; color: var(--muted); min-width: 0; overflow-wrap: anywhere; }
+.pick-row.joke { justify-content: space-between; }
+.pick-row.joke .pr-text { color: var(--ink); font-size: 17px; }
+.pick-row small { color: var(--muted); font-weight: 800; flex: none; }
+.vote-row .clue { font-weight: 800; color: var(--muted); font-size: 14px; }
+.vote-row .joke-text { font-weight: 900; overflow-wrap: anywhere; }
+.question.prompt { font-size: clamp(24px, 6vw, 38px); }
+
 /* ---------- Écrans plus larges ---------- */
 @media (min-width: 420px) {
   .answers { grid-template-columns: 1fr 1fr; }
@@ -435,6 +504,8 @@ input::placeholder { color: var(--muted); font-weight: 700; }
   .code-actions .btn { flex: none; }
 }
 @media (min-width: 760px) {
+  .draw-stage { grid-template-columns: minmax(0, 1fr) 260px; }
+  .chat { height: auto; min-height: 200px; }
   .modes { grid-template-columns: repeat(6, minmax(0, 1fr)); }
   .mode { grid-template-columns: 1fr; justify-items: start; min-height: 92px; align-content: space-between; }
   .app { gap: 22px; }

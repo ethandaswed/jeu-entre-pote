@@ -1,0 +1,78 @@
+/* =========================================================
+   Jeu Entre Potes — words.js
+   Mots pour « Dessine et devine » et « L'Imposteur »,
+   et questions pour « Réponse la plus drôle ».
+   Chaque ligne : [français, anglais, hébreu]
+   ========================================================= */
+
+const WORDS = [
+  ["chat", "cat", "חתול"], ["chien", "dog", "כלב"], ["maison", "house", "בית"], ["soleil", "sun", "שמש"],
+  ["voiture", "car", "מכונית"], ["arbre", "tree", "עץ"], ["pizza", "pizza", "פיצה"], ["guitare", "guitar", "גיטרה"],
+  ["avion", "airplane", "מטוס"], ["bateau", "boat", "סירה"], ["fusée", "rocket", "רקטה"], ["banane", "banana", "בננה"],
+  ["pomme", "apple", "תפוח"], ["poisson", "fish", "דג"], ["oiseau", "bird", "ציפור"], ["fleur", "flower", "פרח"],
+  ["lune", "moon", "ירח"], ["étoile", "star", "כוכב"], ["nuage", "cloud", "ענן"], ["parapluie", "umbrella", "מטרייה"],
+  ["lunettes", "glasses", "משקפיים"], ["chapeau", "hat", "כובע"], ["chaussure", "shoe", "נעל"], ["téléphone", "phone", "טלפון"],
+  ["ordinateur", "computer", "מחשב"], ["télévision", "television", "טלוויזיה"], ["lit", "bed", "מיטה"], ["chaise", "chair", "כיסא"],
+  ["horloge", "clock", "שעון"], ["clé", "key", "מפתח"], ["porte", "door", "דלת"], ["fenêtre", "window", "חלון"],
+  ["vélo", "bicycle", "אופניים"], ["train", "train", "רכבת"], ["ballon", "ball", "כדור"], ["pont", "bridge", "גשר"],
+  ["montagne", "mountain", "הר"], ["île", "island", "אי"], ["volcan", "volcano", "הר געש"], ["plage", "beach", "חוף ים"],
+  ["serpent", "snake", "נחש"], ["éléphant", "elephant", "פיל"], ["girafe", "giraffe", "ג'ירפה"], ["lion", "lion", "אריה"],
+  ["singe", "monkey", "קוף"], ["lapin", "rabbit", "ארנב"], ["tortue", "turtle", "צב"], ["araignée", "spider", "עכביש"],
+  ["abeille", "bee", "דבורה"], ["papillon", "butterfly", "פרפר"], ["escargot", "snail", "חילזון"], ["pieuvre", "octopus", "תמנון"],
+  ["requin", "shark", "כריש"], ["baleine", "whale", "לווייתן"], ["dinosaure", "dinosaur", "דינוזאור"], ["dragon", "dragon", "דרקון"],
+  ["fantôme", "ghost", "רוח רפאים"], ["robot", "robot", "רובוט"], ["extraterrestre", "alien", "חייזר"], ["sorcière", "witch", "מכשפה"],
+  ["pirate", "pirate", "פיראט"], ["roi", "king", "מלך"], ["couronne", "crown", "כתר"], ["château", "castle", "טירה"],
+  ["épée", "sword", "חרב"], ["trésor", "treasure", "אוצר"], ["cadeau", "gift", "מתנה"], ["gâteau", "cake", "עוגה"],
+  ["glace", "ice cream", "גלידה"], ["hamburger", "hamburger", "המבורגר"], ["frites", "fries", "צ'יפס"], ["œuf", "egg", "ביצה"],
+  ["fromage", "cheese", "גבינה"], ["carotte", "carrot", "גזר"], ["champignon", "mushroom", "פטרייה"], ["cerise", "cherry", "דובדבן"],
+  ["ananas", "pineapple", "אננס"], ["citron", "lemon", "לימון"], ["bonhomme de neige", "snowman", "איש שלג"], ["sapin de Noël", "christmas tree", "עץ אשוח"],
+  ["citrouille", "pumpkin", "דלעת"], ["trophée", "trophy", "גביע"], ["médaille", "medal", "מדליה"], ["couteau", "knife", "סכין"],
+  ["fourchette", "fork", "מזלג"], ["tasse", "cup", "ספל"], ["bouteille", "bottle", "בקבוק"], ["lampe", "lamp", "מנורה"],
+  ["bougie", "candle", "נר"], ["livre", "book", "ספר"], ["crayon", "pencil", "עיפרון"], ["ciseaux", "scissors", "מספריים"],
+  ["sac à dos", "backpack", "תיק גב"], ["manette", "controller", "שלט"], ["casque", "headphones", "אוזניות"], ["appareil photo", "camera", "מצלמה"],
+  ["micro", "microphone", "מיקרופון"], ["piano", "piano", "פסנתר"], ["batterie", "drums", "תופים"], ["tente", "tent", "אוהל"],
+  ["feu de camp", "campfire", "מדורה"], ["arc-en-ciel", "rainbow", "קשת בענן"], ["éclair", "lightning", "ברק"], ["tornade", "tornado", "טורנדו"],
+  ["pyramide", "pyramid", "פירמידה"], ["tour Eiffel", "Eiffel Tower", "מגדל אייפל"], ["sirène", "mermaid", "בת ים"], ["licorne", "unicorn", "חד קרן"],
+  ["vampire", "vampire", "ערפד"], ["zombie", "zombie", "זומבי"], ["momie", "mummy", "מומיה"], ["squelette", "skeleton", "שלד"],
+  ["cœur", "heart", "לב"], ["œil", "eye", "עין"], ["main", "hand", "יד"], ["nez", "nose", "אף"],
+  ["dent", "tooth", "שן"], ["cerveau", "brain", "מוח"], ["hélicoptère", "helicopter", "מסוק"], ["sous-marin", "submarine", "צוללת"],
+  ["ambulance", "ambulance", "אמבולנס"], ["camion", "truck", "משאית"], ["tracteur", "tractor", "טרקטור"], ["skateboard", "skateboard", "סקייטבורד"],
+  ["parachute", "parachute", "מצנח"], ["phare", "lighthouse", "מגדלור"], ["igloo", "igloo", "איגלו"], ["cactus", "cactus", "קקטוס"],
+  ["palmier", "palm tree", "עץ דקל"], ["Pikachu", "Pikachu", "פיקאצ'ו"], ["Mario", "Mario", "מריו"], ["Spider-Man", "Spider-Man", "ספיידרמן"],
+  ["pingouin", "penguin", "פינגווין"], ["vache", "cow", "פרה"], ["cochon", "pig", "חזיר"], ["hibou", "owl", "ינשוף"],
+  ["crocodile", "crocodile", "תנין"], ["kangourou", "kangaroo", "קנגורו"], ["chameau", "camel", "גמל"], ["canard", "duck", "ברווז"]
+];
+
+/* Réponse la plus drôle : [français, anglais, hébreu] */
+const PROMPTS = [
+  ["Le pire nom pour un chien", "The worst name for a dog", "השם הכי גרוע לכלב"],
+  ["Ce que dit vraiment un chat quand il miaule", "What a cat is really saying when it meows", "מה חתול באמת אומר כשהוא מיילל"],
+  ["Le pire cadeau d'anniversaire", "The worst birthday present", "מתנת יום ההולדת הכי גרועה"],
+  ["Le titre du prochain film Marvel", "The title of the next Marvel movie", "השם של סרט מארוול הבא"],
+  ["Une excuse pour ne pas avoir fait ses devoirs", "An excuse for not doing your homework", "תירוץ למה לא הכנת שיעורי בית"],
+  ["Le pire super-pouvoir", "The worst superpower", "כוח העל הכי גרוע"],
+  ["Un nouveau parfum de glace qui va faire un flop", "A new ice cream flavor that will flop", "טעם גלידה חדש שבטוח ייכשל"],
+  ["Ce que les extraterrestres pensent des humains", "What aliens think about humans", "מה חייזרים חושבים על בני אדם"],
+  ["Le pire nom pour un restaurant", "The worst name for a restaurant", "השם הכי גרוע למסעדה"],
+  ["La phrase à ne jamais dire à un prof", "Something you should never say to a teacher", "משפט שאסור להגיד למורה"],
+  ["Le pire pseudo de joueur en ligne", "The worst gamer tag", "שם המשתמש הכי גרוע במשחק"],
+  ["Ce que ton chien fait quand tu n'es pas là", "What your dog does when you're not home", "מה הכלב שלך עושה כשאתה לא בבית"],
+  ["Une nouvelle règle absurde pour le foot", "A ridiculous new rule for football", "חוק חדש ומגוחך לכדורגל"],
+  ["Le slogan d'une marque de chaussettes", "A slogan for a sock brand", "סלוגן למותג גרביים"],
+  ["Ce que dit le GPS quand il est fatigué", "What the GPS says when it's tired", "מה ה-GPS אומר כשהוא עייף"],
+  ["Le nom d'un nouveau Pokémon complètement nul", "The name of a totally useless new Pokémon", "שם של פוקימון חדש וגרוע לגמרי"],
+  ["La pire chose à crier dans une bibliothèque", "The worst thing to yell in a library", "הדבר הכי גרוע לצעוק בספרייה"],
+  ["Ce que ton téléphone pense de toi", "What your phone thinks of you", "מה הטלפון שלך חושב עליך"],
+  ["Un métier qui n'existe pas encore", "A job that doesn't exist yet", "מקצוע שעוד לא קיים"],
+  ["Le pire ingrédient sur une pizza", "The worst pizza topping", "התוספת הכי גרועה לפיצה"],
+  ["Les derniers mots d'un pirate", "A pirate's last words", "המילים האחרונות של פיראט"],
+  ["Le nom d'un groupe de K-pop composé de mamies", "The name of a K-pop band made of grandmas", "שם של להקת קיי-פופ של סבתות"],
+  ["Ce que le Père Noël fait le reste de l'année", "What Santa does the rest of the year", "מה סנטה קלאוס עושה בשאר השנה"],
+  ["Le titre d'un livre que personne ne lira", "A book title nobody would ever read", "שם של ספר שאף אחד לא יקרא"],
+  ["Le pire tutoriel YouTube", "The worst YouTube tutorial", "המדריך הכי גרוע ביוטיוב"],
+  ["Ce qu'il y a vraiment dans le Triangle des Bermudes", "What's really in the Bermuda Triangle", "מה באמת יש במשולש ברמודה"],
+  ["Une invention inutile mais géniale", "A useless but brilliant invention", "המצאה מיותרת אבל גאונית"],
+  ["Le pire conseil pour réussir un contrôle", "The worst advice for passing a test", "העצה הכי גרועה להצליח במבחן"],
+  ["Ce que dirait un poisson rouge s'il pouvait parler", "What a goldfish would say if it could talk", "מה דג זהב היה אומר אם היה יכול לדבר"],
+  ["Le nom du prochain jeu vidéo à succès", "The name of the next hit video game", "השם של משחק הווידאו המצליח הבא"]
+];
